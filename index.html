@@ -155,10 +155,7 @@ static public bool IsFloat(string s)
 ```c#
 static void Main()
 {
-	using (var sr = new StreamReader("news.txt"))
-	{
-		Console.WriteLine(File.ReadLines("news.txt").Count());
-	}
+	Console.WriteLine(File.ReadLines("news.txt").Count());
 }
 ```
 
