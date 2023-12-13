@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>reveal.js</title>
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section data-markdown="" data-separator="^\n---$" data-separator-vertical="^\n>>>$">
+				<script type="text/template">
+### 関数型プログラミング概論
+
+（株）ボールド 技術部 鳥海秀一
+
+---
+### ２種類のプログラミング手法
+- - -
+* プログラミング手法は大きく分けて、手続き型と関数型の２種類が存在する
+* 手続き型と関数型とでは、その基礎となる計算モデルが異なる
+	* 手続き型 … チューリングマシン
+	* 関数型 … ラムダ計算
+
+---
+### 手続き型プログラミングとは
+- - -
+* 一般にプログラミングといった場合は手続き型プログラミングのことを指す
+* 手続き型は、時間・状態・物という概念を用いた世界の認識に対応する
+* その意味で、オブジェクト指向は手続き型を完成させたと言える
+
+---
+### 関数型プログラミングとは
+- - -
+* 関数型は、数学のような概念操作を用いた世界の認識に対応する
+* 関数型プログラミングは、ラムダ計算という計算モデルを基礎とする
+* ラムダ計算では計算の進行を簡約として定義する
+
+---
+### 関数型言語とは
+- - -
+* 関数型プログラミングを支援する機能を持った言語を関数型プログラミング言語という
+* 関数型言語はリストとリスト関数の２つの要素で構成される
+
+---
+### リスト
+- - -
+* 数値や文字列などの基本データのことをアトムという
+* アトム（とリスト）を要素として並べたものをリストという
+* 要素の評価の仕方により即時評価リストと遅延評価リストに分かれる
+
+---
+### 即値評価と遅延評価
+- - --
+* 即時評価リストはリストの要素を直ちに評価するリスト
+* 遅延リストは必要とされるまで要素の評価を先延ばしするリスト
+* 遅延評価リストによりメモリの使用量を抑えることができる
+
+---
+### リスト関数
+- - -
+* リスト関数はリスト生成関数とリスト操作関数に分類できる
+* 生成関数は特定のルールでリストを生成する
+* リスト操作関数のほとんどは新たなリストを生成する
+
+---
+### リスト生成関数
+- - -
+1. Range
+	* 指定された範囲の連番が要素のリストを返す
+1. ReadLines
+	* 指定されたテキストファイルの各行を要素としたリストを返す
+
+---
+### リスト操作関数(1)
+- - -
+1. Select
+	* 個々の要素に指定した関数を適用した結果のリストを返す
+1. SelectMany
+	* 入れ子になったリストの深さを1つ下げるSelect
+
+---
+### リスト操作関数(2)
+- - -
+1. Where
+	* 指定した関数の結果が真になる要素のリストを返す
+1. GroupBy
+	* 指定した関数の結果が等しい要素のリストのリストを返す
+
+---
+### リスト操作関数(3)
+- - -
+1. OrderBy
+	* リストを指定したキーで並び替える
+1. Aggregate
+	* リストの各要素どおしに指定した関数を適用した結果を返す
+
+---
+### 演習問題1
+- - -
+* 引数の文字列が整数かどうか判定する関数を記述せよ
+
+---
+### 演習問題1解答例
+- - -
+```c#
+static public bool IsInt(string s)
+{
+	return new string(s
+		.Select(c => (c == '+' || c == '-') ? '+' : ('0' <= c && c <= '9') ? '0' : c)
+		.Aggregate("", (r, n) => r.LastOrDefault() == n ? r : r + n)
+		.Where((c, i) => i != 0 || c != '+')
+		.ToArray()) == "0";
+}
+```
+
+---
+### 演習問題2
+- - -
+* 引数の文字列が浮動小数点数か判定する関数を記述せよ
+
+---
+### 演習問題2解答例
+- - -
+```c#
+static public bool IsFloat(string s)
+{
+	return new List<string> { "0", "0.", ".0", "0.0", "0E0", "0.E0", ".0E0", "0.0E0" }.Any(x =>
+		x == new string(s
+			.Select(c => (c == '+' || c == '-') ? '+' : ('0' <= c && c <= '9') ? '0' : (c == 'E' || c == 'e') ? 'E' : c)
+			.Aggregate("", (r, n) => r.LastOrDefault() == n && n == '0' ? r : r + n)
+			.Where((c, i) => i != 0 || c != '+')
+			.ToArray()).Replace("E+", "E"));
+}
+```
+
+---
+### 演習問題3
+- - -
+* news.txtの行数を数えるプログラムを関数型の記述手法で書き直せ
+* [サンプルプログラム](sln/NewsCountProgram.zip)を元に作成せよ
+
+---
+### 演習問題3解答例
+- - -
+```c#
+static void Main()
+{
+	using (var sr = new StreamReader("news.txt"))
+	{
+		Console.WriteLine(File.ReadLines("news.txt").Count());
+	}
+}
+```
+
+---
+### 練習問題1
+- - -
+* news.txtの単語数を数えるプログラム記述せよ
+* 単語はスペース、タブ、改行で区切られた文字列のことを指す
+* 文字列を単語の配列に変換するには、Split(new char[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries)を使うこと
+
+---
+### まとめ
+- - -
+1. 関数型プログラミングは手続き型とかなり異なる考え方を必要とする
+1. 最近のプログラミング言語では手続き型と関数型の両手法が使えるため、これらをどのように使い分けるのかが課題となる
+
+				</script>
+			</section>
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+		});
+	</script>
+</body>
+
+</html>
