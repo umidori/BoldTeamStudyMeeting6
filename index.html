@@ -46,6 +46,13 @@
 * ラムダ計算では計算の進行を簡約として定義する
 
 ---
+### 簡約の補足
+- - -
+* 情報はエントロピー増大の法則という物理の法則に従う
+* 情報は処理すればするほど劣化し元の情報を失っていく
+* ラムダ計算もこの法則から逃れることはできない
+
+---
 ### 関数型言語とは
 - - -
 * 関数型プログラミングを支援する機能を持った言語を関数型プログラミング言語という
@@ -105,6 +112,14 @@
 	* リストの各要素どおしに指定した関数を適用した結果を返す
 
 ---
+### リスト操作関数(4)
+- - -
+1. Take
+	* 先頭から指定した個数の要素のリストを返す
+1. Skip
+	* 先頭から指定した個数の要素を除いたリストを返す
+
+---
 ### 演習問題1
 - - -
 * 引数の文字列が整数かどうか判定する関数を記述せよ
@@ -140,6 +155,21 @@ static public bool IsFloat(string s)
 			.Aggregate("", (r, n) => r.LastOrDefault() == n && n == '0' ? r : r + n)
 			.Where((c, i) => i != 0 || c != '+')
 			.ToArray()).Replace("E+", "E"));
+}
+```
+
+---
+### 演習問題2解答例(別解)
+- - -
+```c#
+static public bool IsFloat(string s)
+{
+	return new Func<IEnumerable<char>, bool>(cs =>
+		new List<string> { "0", "0.", ".0", "0.0" }.Any(x => x == new string(cs.TakeWhile(c => c != 'E').ToArray())) &&
+		new List<string> { "", "E0" }.Any(x => x == new string(cs.SkipWhile(c => c != 'E').Where((c, i) => i != 1 || c != '+').ToArray())))(
+				s.Select(c => (c == '+' || c == '-') ? '+' : ('0' <= c && c <= '9') ? '0' : (c == 'E' || c == 'e') ? 'E' : c)
+				.Aggregate("", (r, n) => r.LastOrDefault() == n && n == '0' ? r : r + n)
+				.Where((c, i) => i != 0 || c != '+'));
 }
 ```
 
