@@ -171,6 +171,7 @@ static public bool IsFloat(string s)
 				.Aggregate("", (r, n) => r.LastOrDefault() == n && n == '0' ? r : r + n)
 				.Where((c, i) => i != 0 || c != '+'));
 }
+
 ```
 ---
 ### 演習問題2解答例(別解2)
