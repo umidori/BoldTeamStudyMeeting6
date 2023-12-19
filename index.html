@@ -50,7 +50,7 @@
 - - -
 * 情報はエントロピー増大の法則という物理の法則に従う
 * 情報は処理すればするほど劣化し元の情報を失っていく
-* ラムダ計算もこの法則から逃れることはできない
+* ラムダ計算の簡約はこの法則の証査と言える
 
 ---
 ### 関数型言語とは
@@ -159,7 +159,7 @@ static public bool IsFloat(string s)
 ```
 
 ---
-### 演習問題2解答例(別解)
+### 演習問題2解答例(別解1)
 - - -
 ```c#
 static public bool IsFloat(string s)
@@ -170,6 +170,16 @@ static public bool IsFloat(string s)
 				s.Select(c => (c == '+' || c == '-') ? '+' : ('0' <= c && c <= '9') ? '0' : (c == 'E' || c == 'e') ? 'E' : c)
 				.Aggregate("", (r, n) => r.LastOrDefault() == n && n == '0' ? r : r + n)
 				.Where((c, i) => i != 0 || c != '+'));
+}
+```
+---
+### 演習問題2解答例(別解2)
+- - -
+```c#
+static public bool IsFloat(string s)
+{
+	return System.Text.RegularExpressions.Regex.IsMatch(
+		s, @"^[+-]?(?:[0-9]+|[0-9]+\.[0-9]*|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?$");
 }
 ```
 
